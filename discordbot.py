@@ -6,7 +6,7 @@ import json
 
 
 # responses that the bot randomly cycles through
-responses = ['Poop you!', 'E-10?', "Jessica really got it last night", "I am the SECOND best blitzcrank", "Alphonse is better than biscuit", 'woah Woah WOAHHHH', 'Chungo, Gaggon?', "YOU FOOL", "league anyone?"]
+responses = ["Hello! I am a discord bot", "Hi I am NOT a discord bot", "I am real!"]
 
 
 # class that represents the data recieved from the api, including its inputs.
@@ -43,7 +43,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.startswith('/ff'):
+    if message.content.startswith('/response'):
         await message.channel.send(random.choice(responses))
 
     if message.content.startswith('/joke'):
