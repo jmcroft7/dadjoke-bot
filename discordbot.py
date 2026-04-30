@@ -1,55 +1,49 @@
 import discord
 import os
-import random
-import requests
-import json
+from discord.ext import commands
+from dotenv import load_dotenv
+import asyncio
 
+load_dotenv()
 
-# responses that the bot randomly cycles through
-responses = ["Hello! I am a discord bot", "Hi I am NOT a discord bot", "I am real!"]
+TOKEN = os.getenv('Token1')
 
+class MyBot(commands.Bot):
+    def __init__(self):
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(command_prefix='!', intents=intents, help_command=None)
 
-# class that represents the data recieved from the api, including its inputs.
-class Joke:
-    def __init__(self, id, contents):
-        self.id = id
-        self.contents = contents
+    async def setup_hook(self):
+        # Load cogs
+        initial_extensions = ['cogs.general', 'cogs.exercise']
+        for extension in initial_extensions:
+            try:
+                await self.load_extension(extension)
+                print(f'Loaded extension {extension}')
+            except Exception as e:
+                print(f'Failed to load extension {extension}: {e}')
 
-# function that requests data from api
+    async def on_ready(self):
+        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print('------')
 
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            return # Ignore unknown commands
+        print(f'Error in command {ctx.command}: {error}')
+        await ctx.send(f'An error occurred: {error}')
 
-def get_quote():
-    q = requests.get('https://icanhazdadjoke.com', headers={"Accept": "application/json"})
-    words = q.json()
-    endjoke = words['joke']
-    return (endjoke)
+bot = MyBot()
 
+@bot.command(name='help', aliases=['h'])
+async def help_command(ctx):
+    # Route !help to the custom help in General cog or just define it here
+    general_cog = bot.get_cog('General')
+    if general_cog:
+        await general_cog.help_custom(ctx)
+    else:
+        await ctx.send("Help command is currently unavailable.")
 
-# this is the bot
-client = discord.Client()
-
-# on statement for bot
-
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-
-# commands for bot
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('/response'):
-        await message.channel.send(random.choice(responses))
-
-    if message.content.startswith('/joke'):
-        await message.channel.send(get_quote())
-
-
-# this is what makes bot run
-# token1 = .env or some secret file not displayed to public
-client.run(os.getenv('Token1'))
+if __name__ == '__main__':
+    bot.run(TOKEN)

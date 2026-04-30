@@ -62,3 +62,7 @@ Project Link: [https://github.com/jmcroft7/dadjoke-bot](https://github.com/jmcro
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/devjohnathan/
+
+requires a .env file with the following:
+Token1=
+
